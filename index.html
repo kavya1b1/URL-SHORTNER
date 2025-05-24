@@ -1,36 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>✨ URL Shortener</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     * {
       box-sizing: border-box;
-      font-family: 'Inter', sans-serif;
+      font-family: 'Poppins', sans-serif;
+      transition: background 0.3s, color 0.3s;
     }
     body {
-      background: linear-gradient(to right, #667eea, #764ba2);
-      color: #fff;
+      background: var(--bg-color);
+      color: var(--text-color);
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 2rem;
+      flex-direction: column;
     }
     .container {
-      background: #1e1e2f;
+      background: var(--card-bg);
       padding: 2rem;
       border-radius: 20px;
       width: 100%;
       max-width: 500px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.2);
       text-align: center;
-      animation: fadeIn 1s ease;
     }
     h2 {
       margin-bottom: 1rem;
-      font-size: 1.8rem;
+      font-size: 2rem;
       font-weight: 600;
     }
     input {
@@ -40,58 +42,130 @@
       border-radius: 12px;
       margin-bottom: 1rem;
       font-size: 1rem;
+      background: var(--input-bg);
+      color: var(--input-text);
+    }
+    input::placeholder {
+      color: var(--placeholder-color);
     }
     button {
       padding: 0.75rem 1.5rem;
-      background-color: #5e72e4;
-      color: white;
+      background: var(--button-bg);
+      color: var(--button-text);
       border: none;
       border-radius: 12px;
       font-size: 1rem;
       cursor: pointer;
-      transition: background 0.3s ease;
     }
     button:hover {
-      background-color: #4353c2;
+      opacity: 0.9;
+    }
+    #loader {
+      display: none;
+      font-size: 1rem;
+      margin-top: 1rem;
     }
     #result {
       margin-top: 1rem;
     }
-    .copy-message {
-      margin-top: 0.5rem;
-      font-size: 0.9rem;
+    #theme-toggle, #history-toggle {
+      margin-bottom: 1rem;
+      padding: 0.5rem 1rem;
+      border-radius: 10px;
+      cursor: pointer;
+      background: var(--toggle-bg);
+      color: var(--toggle-text);
+      border: none;
+    }
+    .tooltip {
+      display: none;
       color: #80ffd3;
-      opacity: 0;
-      animation: fadeInUp 0.5s forwards;
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+    }
+    #history {
+      display: none;
+      margin-top: 1rem;
+      text-align: left;
+      padding: 1rem;
+      background: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+    /* Default Light Mode */
+    :root {
+      --bg-color: #f4f4f4;
+      --text-color: #333;
+      --card-bg: rgba(255, 255, 255, 0.9);
+      --input-bg: #ffffff;
+      --input-text: #333;
+      --placeholder-color: #777;
+      --button-bg: #5e72e4;
+      --button-text: #fff;
+      --toggle-bg: #333;
+      --toggle-text: #fff;
     }
-
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+    
+    /* Dark Mode */
+    [data-theme="dark"] {
+      --bg-color: #1e1e2f;
+      --text-color: #fff;
+      --card-bg: rgba(255, 255, 255, 0.1);
+      --input-bg: rgba(255, 255, 255, 0.2);
+      --input-text: white;
+      --placeholder-color: #ddd;
+      --button-bg: linear-gradient(90deg, #5e72e4, #764ba2);
+      --button-text: #fff;
+      --toggle-bg: #fff;
+      --toggle-text: #333;
     }
   </style>
 </head>
 <body>
+  <button id="theme-toggle">🌙 Switch Theme</button>
   <div class="container">
     <h2>✨ URL Shortener</h2>
     <input type="text" id="longUrl" placeholder="Paste your long URL here..." />
     <button onclick="shortenUrl()">Generate Short URL</button>
+    <div id="loader">⏳ Shortening URL...</div>
     <div id="result"></div>
+    <button id="history-toggle">📜 Show History</button>
+    <div id="history"></div>
   </div>
 
   <script>
+    function setTheme(theme) {
+      document.documentElement.setAttribute("data-theme", theme);
+      localStorage.setItem("theme", theme);
+    }
+
+    function toggleTheme() {
+      const currentTheme = localStorage.getItem("theme") || "light";
+      const newTheme = currentTheme === "light" ? "dark" : "light";
+      setTheme(newTheme);
+    }
+
+    document.getElementById("theme-toggle").addEventListener("click", toggleTheme);
+    setTheme(localStorage.getItem("theme") || "light");
+
     async function shortenUrl() {
       const longUrl = document.getElementById("longUrl").value;
+      
+      if (!longUrl || !longUrl.startsWith("http")) {
+        alert("Please enter a valid URL.");
+        return;
+      }
+
+      document.getElementById("loader").style.display = "block";
+
       const res = await fetch("http://localhost:8001/url", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ url: longUrl })
       });
+
+      document.getElementById("loader").style.display = "none";
 
       const data = await res.json();
       const shortUrl = `http://localhost:8001/${data.id}`;
@@ -100,16 +174,50 @@
       resultDiv.innerHTML = `
         <p>Short URL: <a href="${shortUrl}" target="_blank">${shortUrl}</a></p>
         <button onclick="copyToClipboard('${shortUrl}')">📋 Copy</button>
-        <div id="copyMessage" class="copy-message"></div>
+        <div class="tooltip">Copied to clipboard!</div>
       `;
+
+      saveToHistory(longUrl, shortUrl);
     }
 
     function copyToClipboard(text) {
       navigator.clipboard.writeText(text);
-      const message = document.getElementById("copyMessage");
-      message.textContent = "Copied to clipboard!";
-      message.style.opacity = 1;
+      const tooltip = document.querySelector(".tooltip");
+      tooltip.style.display = "block";
+      setTimeout(() => { tooltip.style.display = "none"; }, 2000);
     }
+
+    function saveToHistory(longUrl, shortUrl) {
+      let history = JSON.parse(localStorage.getItem("history")) || [];
+      history.push({ longUrl, shortUrl });
+      localStorage.setItem("history", JSON.stringify(history));
+    }
+
+    function displayHistory() {
+      const historyDiv = document.getElementById("history");
+      let history = JSON.parse(localStorage.getItem("history")) || [];
+      if (history.length === 0) {
+        historyDiv.innerHTML = "<p>No history available.</p>";
+        return;
+      }
+      historyDiv.innerHTML = "<h3>📜 Shortened URLs</h3>";
+      history.forEach(entry => {
+        historyDiv.innerHTML += `<p>${entry.longUrl} ➡ <a href="${entry.shortUrl}" target="_blank">${entry.shortUrl}</a></p>`;
+      });
+    }
+
+    document.getElementById("history-toggle").addEventListener("click", function () {
+      const historyDiv = document.getElementById("history");
+      if (historyDiv.style.display === "none" || historyDiv.style.display === "") {
+        displayHistory();
+        historyDiv.style.display = "block";
+        this.textContent = "🔽 Hide History";
+      } else {
+        historyDiv.style.display = "none";
+        this.textContent = "📜 Show History";
+      }
+    });
+
   </script>
 </body>
 </html>
