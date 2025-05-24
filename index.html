@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>✨ URL Shortener</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+    body {
+      background: linear-gradient(to right, #667eea, #764ba2);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .container {
+      background: #1e1e2f;
+      padding: 2rem;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 500px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      text-align: center;
+      animation: fadeIn 1s ease;
+    }
+    h2 {
+      margin-bottom: 1rem;
+      font-size: 1.8rem;
+      font-weight: 600;
+    }
+    input {
+      padding: 0.75rem;
+      width: 100%;
+      border: none;
+      border-radius: 12px;
+      margin-bottom: 1rem;
+      font-size: 1rem;
+    }
+    button {
+      padding: 0.75rem 1.5rem;
+      background-color: #5e72e4;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background-color: #4353c2;
+    }
+    #result {
+      margin-top: 1rem;
+    }
+    .copy-message {
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      color: #80ffd3;
+      opacity: 0;
+      animation: fadeInUp 0.5s forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>✨ URL Shortener</h2>
+    <input type="text" id="longUrl" placeholder="Paste your long URL here..." />
+    <button onclick="shortenUrl()">Generate Short URL</button>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    async function shortenUrl() {
+      const longUrl = document.getElementById("longUrl").value;
+      const res = await fetch("http://localhost:8001/url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: longUrl })
+      });
+
+      const data = await res.json();
+      const shortUrl = `http://localhost:8001/${data.id}`;
+
+      const resultDiv = document.getElementById("result");
+      resultDiv.innerHTML = `
+        <p>Short URL: <a href="${shortUrl}" target="_blank">${shortUrl}</a></p>
+        <button onclick="copyToClipboard('${shortUrl}')">📋 Copy</button>
+        <div id="copyMessage" class="copy-message"></div>
+      `;
+    }
+
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text);
+      const message = document.getElementById("copyMessage");
+      message.textContent = "Copied to clipboard!";
+      message.style.opacity = 1;
+    }
+  </script>
+</body>
+</html>
