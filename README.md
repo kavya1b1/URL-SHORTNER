@@ -42,9 +42,16 @@ url-shortener/
 ```bash
 git clone https://github.com/kavya1b1/url-shortener.git
 cd url-shortener
-2. Set Up Backend
+
 bash
 Copy
 Edit
 cd backend
 npm install
+
+start the server by :-
+node index.js
+
+🌈 Demo
+Frontend: https://your-vercel-url.vercel.app
+
