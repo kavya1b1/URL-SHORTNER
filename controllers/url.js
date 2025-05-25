@@ -21,3 +21,27 @@ async function handelGenerateNewShortURL(req, res) {
 module.exports = {
     handelGenerateNewShortURL,
 };
+
+async function handleGetAnalytics(req, res) {
+    const shortId = req.params.shortId;
+  
+    try {
+      const entry = await URL.findOne({ shortId });
+      if (!entry) {
+        return res.status(404).json({ error: 'Short URL not found' });
+      }
+  
+      return res.json({
+        totalClicks: entry.visitHistory.length,
+        visitHistory: entry.visitHistory
+      });
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
+    }
+  }
+  
+  module.exports = {
+    handelGenerateNewShortURL,
+    handleGetAnalytics,
+  };
+  
