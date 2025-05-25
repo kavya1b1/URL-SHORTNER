@@ -27,3 +27,13 @@ A sleek and animated full-stack URL shortener web application built using Node.j
 
 ## 📁 Project Structure
 
+url-shortener/
+├── backend/
+│ ├── index.js
+│ ├── models/ShortUrl.js
+│ ├── routes/urlRoutes.js
+├── frontend/
+│ ├── index.html
+├── package.json
+└── README.md
+
