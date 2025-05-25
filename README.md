@@ -37,3 +37,14 @@ url-shortener/
 ├── package.json
 └── README.md
 
+### 1. Clone the Repo
+
+```bash
+git clone https://github.com/your-username/url-shortener.git
+cd url-shortener
+2. Set Up Backend
+bash
+Copy
+Edit
+cd backend
+npm install
