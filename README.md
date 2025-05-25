@@ -40,7 +40,7 @@ url-shortener/
 ### 1. Clone the Repo
 
 ```bash
-git clone https://github.com/your-username/url-shortener.git
+git clone https://github.com/kavya1b1/url-shortener.git
 cd url-shortener
 2. Set Up Backend
 bash
