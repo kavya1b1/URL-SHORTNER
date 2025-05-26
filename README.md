@@ -55,3 +55,8 @@ node index.js
 🌈 Demo
 Frontend: https://your-vercel-url.vercel.app
 
+🙋‍♀️ Author
+Kavya Gupta
+📧 kavya1b1@gmail.com
+🌐 GitHub | LinkedIn
+
