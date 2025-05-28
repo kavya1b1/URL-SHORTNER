@@ -1,4 +1,4 @@
-# ✨ URL Shortener
+# ✨ URL Shortener 
 
 A sleek and animated full-stack URL shortener web application built using Node.js, Express, MongoDB, and a responsive frontend with theme toggle and history tracking.
 
